@@ -1,0 +1,37 @@
+version: "3.3"  # optional since v1.27.0
+services:
+  web:
+    user: root
+    build: 
+      context: ..
+      dockerfile: ./odoo-dev-env/Dockerfile
+    ports:
+      - "8069:8069"
+    tty: true
+    depends_on:
+      - db
+    volumes:
+      - ../odoo:/home/odoo/app
+      - odoo-data:/var/lib/odoo
+    restart: always
+
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+      - PGDATA=/var/lib/postgresql/data/pgdata
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    ports:
+      - "5432:5432"
+    restart: always
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "odoo_erp", "-d", "db_odoo_erp", "-e", db_odoo_erp]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+volumes:
+  odoo-data: {}
+  odoo-db-data: {}
