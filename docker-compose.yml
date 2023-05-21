@@ -13,6 +13,8 @@ services:
     volumes:
       - ../odoo:/home/odoo/app
       - odoo-data:/var/lib/odoo
+    cpus: 2
+    mem_limit: 2g
     restart: always
 
   db:
@@ -26,12 +28,16 @@ services:
       - odoo-db-data:/var/lib/postgresql/data/pgdata
     ports:
       - "5432:5432"
+    cpus: 3
+    mem_limit: 2g
+    tty: true
     restart: always
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "odoo_erp", "-d", "db_odoo_erp", "-e", db_odoo_erp]
+      test: ["CMD", "pg_isready", "-U", "odoo", "-d", "odoo_erp"]
       interval: 10s
       timeout: 5s
       retries: 5
+#    command: psql
 volumes:
   odoo-data: {}
   odoo-db-data: {}
